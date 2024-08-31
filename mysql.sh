@@ -46,6 +46,14 @@ VALIDATE $? "Enabled MYSQL server"
 systemctl start mysqld &>>LOG_FILE
 VALIDATE $? "Started MYSQL server"
 
-mysql_secure_installation --set-root-pass ExpenseApp@1 &>>LOG_FILE
-VALIDATE $? "Settingup root password"
+# mysql_secure_installation --set-root-pass ExpenseApp@1 &>>LOG_FILE --> we have to go into mysql to see the content with this cmnd.
 
+mysql -h mysql.naziyadaws81.online  -u root -pExpenseApp@1 -e 'show databases;'&>>LOG_FILE #but with this cmnd we can directly see the content without entering into mysql
+if [ $? -ne 0 ]
+then
+    echo "MySql root password is not setup , settingup now" &>>LOG_FILE
+    mysql_secure_installation --set-root-pass ExpenseApp@1
+    VALIDATE $? "Settingup root password"
+else
+    echo "mysql root password is already setup ... $Y SKIPPING $N" | tee -a $LOG_FILE
+fi
