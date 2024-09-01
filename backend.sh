@@ -64,3 +64,6 @@ cd /app
 rm -rf /app/* # it means remove the existing code in this folder
 unzip /tmp/backend.zip &>>LOG_FILE
 VALIDATE $? "Extracting backend application code"
+
+npm install
+pwd
