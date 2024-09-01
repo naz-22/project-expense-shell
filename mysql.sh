@@ -37,21 +37,21 @@ echo "Script started executing at : $(date)" | tee -a $LOG_FILE
 
 CHECK_ROOT 
 
-dnf install mysql-server -y &>>LOG_FILE
+dnf install mysql-server -y &>>$LOG_FILE
 VALIDATE $? "Installing MYSQL Server"
 
-systemctl enable mysqld &>>LOG_FILE
+systemctl enable mysqld &>>$LOG_FILE
 VALIDATE $? "Enabled MYSQL server"
 
-systemctl start mysqld &>>LOG_FILE
+systemctl start mysqld &>>$LOG_FILE
 VALIDATE $? "Started MYSQL server"
 
 # mysql_secure_installation --set-root-pass ExpenseApp@1 &>>LOG_FILE --> we have to go into mysql to see the content with this cmnd.
 
-mysql -h mysql.naziyadaws81.online  -u root -pExpenseApp@1 -e 'show databases;'&>>LOG_FILE #but with this cmnd we can directly see the content without entering into mysql
+mysql -h mysql.naziyadaws81.online  -u root -pExpenseApp@1 -e 'show databases;'&>>$LOG_FILE #but with this cmnd we can directly see the content without entering into mysql
 if [ $? -ne 0 ]
 then
-    echo "MySql root password is not setup , settingup now" &>>LOG_FILE
+    echo "MySql root password is not setup , settingup now" &>>$LOG_FILE
     mysql_secure_installation --set-root-pass ExpenseApp@1
     VALIDATE $? "Settingup root password"
 else

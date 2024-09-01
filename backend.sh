@@ -1,5 +1,5 @@
 #!/bin/bash
-LOGS_FOLDER="/var/log/expense"
+LOGS_FOLDER="/var/log/expense"  
 SCRIPT_NAME=$(echo $0 | cut -d "." -f1)
 TIME_STAMP=$(date +%Y-%m-%d-%H-%M-%S)
 LOG_FILE="$LOGS_FOLDER/$SCRIPT_NAME-$TIME_STAMP.log"
@@ -35,20 +35,20 @@ VALIDATE()
 echo "Script started executing at : $(date)" | tee -a $LOG_FILE 
 
 CHECK_ROOT 
-dnf module disable nodejs -y &>>LOG_FILE
+dnf module disable nodejs -y &>>$LOG_FILE
 VALIDATE $? "Disable default node.js"
 
-dnf module enable nodejs:20 -y &>>LOG_FILE
+dnf module enable nodejs:20 -y &>>$LOG_FILE
 VALIDATE $? "Enable node.js:20"
 
-dnf install nodejs -y  &>>LOG_FILE
+dnf install nodejs -y  &>>$LOG_FILE
 VALIDATE $? "Install nodejs"
 
-id expense &>>LOG_FILE
+id expense &>>$LOG_FILE
 if [ $? -ne 0 ]
 then 
     echo -e "expense user not exists... $G Creating $N" 
-    useradd expense &>>LOG_FILE
+    useradd expense &>>$LOG_FILE
     VALIDATE $? "Creating expense user"
 else 
     echo -e "expense user already exists....$Y SKIPPING $N"
@@ -62,15 +62,15 @@ VALIDATE $? "Downloading backend application code"
 
 cd /app
 rm -rf /app/* # it means remove the existing code in this folder
-unzip /tmp/backend.zip &>>LOG_FILE
+unzip /tmp/backend.zip &>>$LOG_FILE
 VALIDATE $? "Extracting backend application code"
 
-npm install &>>LOG_FILE
+npm install &>>$LOG_FILE
 cp /home/ec2-user/project-expense-shell/backend.service /etc/systemd/system/backend.service
 
 #load the data before running backend 
 
-dnf install mysql -y &>>LOG_FILE
+dnf install mysql -y &>>$LOG_FILE
 VALIDATE $? "Installing mysql client"
 
 mysql -h mysql.naziyadaws81.online -uroot -pExpenseApp@1 < /app/schema/backend.sql &>>$LOG_FILE
