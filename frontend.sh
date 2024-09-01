@@ -36,14 +36,23 @@ echo "Script started executing at : $(date)" | tee -a $LOG_FILE
 
 CHECK_ROOT 
 
-dnf install nginx -y  &>>LOG_FILE
+dnf install nginx -y  &>>$LOG_FILE
 VALIDATE $? "Installing nginx" 
 
-systemctl enable nginx &>>LOG_FILE
+systemctl enable nginx &>>$LOG_FILE
 VALIDATE $? "Enabled nginx"
 
-systemctl start nginx &>>LOG_FILE
+systemctl start nginx &>>$LOG_FILE
 VALIDATE $? "Start nginx"
 
-rm -rf /usr/share/nginx/html/*
+rm -rf /usr/share/nginx/html/*  &>>$LOG_FILE
 VALIDATE $? "Removing default website"
+
+curl -o /tmp/frontend.zip https://expense-builds.s3.us-east-1.amazonaws.com/expense-frontend-v2.zip &>>$LOG_FILE
+VALIDATE $? "Downloadig frontend code"
+ 
+cd /usr/share/nginx/html
+unzip /tmp/frontend.zip &>>$LOG_FILE
+VALIDATE $? "Extracting frontend code"
+
+systemctl restart nginx
